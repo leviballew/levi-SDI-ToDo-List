@@ -1,10 +1,11 @@
-// reference the DOM:
+document.addEventListener('DOMContentLoaded', loadTasks);
+
 const taskInput = document.getElementById('taskInput');
 const addTaskButton = document.getElementById('addTaskBtn');
 const taskList = document.getElementById('taskList');
 
-function createTask() {
-  const taskInputText = taskInput.value.trim();
+function createTask(taskText = taskInput.value.trim(), isCompleted = false) {
+  const taskInputText = taskText;
   if (!taskInputText) {
     alert('Please enter a task.');
     return;
@@ -21,11 +22,14 @@ function createTask() {
   const taskCheckbox = document.createElement('input');
   taskCheckbox.type = 'checkbox';
   taskCheckbox.classList.add('task-checkbox');
+  taskCheckbox.checked = isCompleted;
   taskCheckbox.addEventListener('change', function() {
     if (taskCheckbox.checked) {
       taskTextElement.classList.add('completed');
+      updateLocalStorage();
     } else {
       taskTextElement.classList.remove('completed');
+      updateLocalStorage();
     }
   });
 
@@ -34,6 +38,7 @@ function createTask() {
   taskDeleteButton.classList.add('delete-btn');
   taskDeleteButton.addEventListener('click', function() {
     taskItem.remove();
+    updateLocalStorage();
   });
 
   taskItem.appendChild(taskCheckbox);
@@ -41,6 +46,34 @@ function createTask() {
   taskItem.appendChild(taskDeleteButton);
   taskList.appendChild(taskItem);
   taskInput.value = '';
+  updateLocalStorage();
 };
 
+// To get local storage to work:
+// A function to store tasks
+// A function to delete tasks in storage
+// A function to load tasks from local storage
+// call to load tasks from storage
+
+function updateLocalStorage() {
+  const tasks = [];
+  document.querySelectorAll('.task-item').forEach(taskItem => {
+    const text = taskItem.querySelector('.task-text').textContent;
+    const isCompleted = taskItem.querySelector('.task-checkbox').checked;
+    tasks.push({ text, isCompleted });
+  });
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+};
+
+function loadTasks() {
+  const storedTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+  storedTasks.forEach(task => createTask(task.text, task.isCompleted));
+};
+
+// event listeners
 addTaskButton.addEventListener('click', createTask);
+taskInput.addEventListener('keypress', function(event) {
+  if (event.key === 'Enter') {
+    createTask();
+  }
+});
