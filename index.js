@@ -23,6 +23,8 @@ function createTask(taskText = taskInput.value.trim(), isCompleted = false) {
   taskCheckbox.type = 'checkbox';
   taskCheckbox.classList.add('task-checkbox');
   taskCheckbox.checked = isCompleted;
+  if (isCompleted) {
+    taskTextElement.classList.add('completed')};
   taskCheckbox.addEventListener('change', function() {
     if (taskCheckbox.checked) {
       taskTextElement.classList.add('completed');
@@ -48,12 +50,6 @@ function createTask(taskText = taskInput.value.trim(), isCompleted = false) {
   taskInput.value = '';
   updateLocalStorage();
 };
-
-// To get local storage to work:
-// A function to store tasks
-// A function to delete tasks in storage
-// A function to load tasks from local storage
-// call to load tasks from storage
 
 function updateLocalStorage() {
   const tasks = [];
